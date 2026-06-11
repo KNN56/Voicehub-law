@@ -549,7 +549,7 @@
                     <p id="modalStudentId">-</p>
                 </div>
                 <div class="detail-item">
-                    <label>สาขาวิชา</label>
+                    <label>ชั้นปี</label>
                     <p id="modalFaculty">-</p>
                 </div>
                 <div class="detail-item">
@@ -740,7 +740,7 @@
                     <td><span class="category-badge">${item.category || '-'}</span></td>
                     <td><span class="intent-badge">${intentMap[item.intent] || item.intent || '-'}</span></td>
                     <td>${urgencyMap[item.urgency] || item.urgency || '-'}</td>
-                    <td>${item.faculty || '-'}</td>
+                    <td>${item.year_level || '-'}</td>
                     <td>${item.anonymous ? '🔒 ไม่ระบุ' : (item.student_id || '-')}</td>
                     <td>${statusMap[item.status] || item.status}</td>
                     <td><button class="action-btn action-view" onclick="openDetail('${item.id}')">ดูรายละเอียด</button></td>
@@ -762,7 +762,7 @@
                         ${mkTh('category','หมวด')}
                         ${mkTh('intent','เจตนา')}
                         ${mkTh('urgency','ความรีบเร่ง')}
-                        ${mkTh('faculty','สาขา')}
+                        ${mkTh('year_level','ชั้นปี')}
                         ${mkTh('student_id','รหัสนิสิต')}
                         ${mkTh('status','สถานะ')}
                         <th></th>
@@ -806,7 +806,7 @@
 
         document.getElementById('modalTitle').textContent       = item.title || 'ไม่มีหัวข้อ'
         document.getElementById('modalStudentId').textContent   = item.anonymous ? '🔒 ไม่ระบุตัวตน' : (item.student_id || '-')
-        document.getElementById('modalFaculty').textContent     = item.faculty || '-'
+        document.getElementById('modalFaculty').textContent     = item.year_level || '-'
         document.getElementById('modalCategory').textContent    = item.category || '-'
         document.getElementById('modalIntent').textContent      = intentMap[item.intent] || item.intent || '-'
         document.getElementById('modalUrgency').innerHTML       = urgencyMap[item.urgency] || item.urgency || '-'
