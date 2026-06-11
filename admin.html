@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - VoiceHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4569AD;
+            --primary-dark: #1F3F74;
+            --white: #FFFFFF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-700);
+        }
+
+        /* ===== Login Screen ===== */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4569AD 0%, #1F3F74 100%);
+        }
+
+        .login-box {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box .logo {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-box h2 {
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-box p {
+            color: var(--gray-500);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-error {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        /* ===== Admin Layout ===== */
+        .admin-screen { display: none; }
+
+        .topbar {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: none; border: 2px solid var(--gray-200); color: var(--gray-700); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ===== Stats Cards ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* ===== Table ===== */
+        .table-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-header h2 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+
+        .table-filters {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .table-filters select,
+        .table-filters input {
+            padding: 0.5rem 0.875rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .table-filters select:focus,
+        .table-filters input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--gray-50);
+        }
+
+        th {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        th:hover { color: var(--primary); }
+        th.sort-asc::after { content: ' ↑'; color: var(--primary); }
+        th.sort-desc::after { content: ' ↓'; color: var(--primary); }
+
+        .urgency-high { color: #DC2626; font-weight: 600; }
+        .urgency-medium { color: #D97706; font-weight: 600; }
+        .urgency-low { color: #16A34A; font-weight: 600; }
+        .intent-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: rgba(69,105,173,0.08);
+            color: var(--primary);
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--gray-100);
+            font-size: 0.95rem;
+        }
+
+        tr:hover td { background: var(--gray-50); }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-pending { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .badge-progress { background: rgba(59,130,246,0.1); color: var(--info); }
+        .badge-done { background: rgba(16,185,129,0.1); color: var(--success); }
+
+        .category-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-view { background: var(--gray-100); color: var(--gray-700); }
+        .action-view:hover { background: var(--gray-200); }
+
+        /* ===== Modal Detail ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-head {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-head h3 { color: var(--gray-900); }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        .modal-body { padding: 1.5rem; }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item p {
+            color: var(--gray-900);
+        }
+
+        .detail-message {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .status-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* ===== Loading / Empty ===== */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* ===== Settings ===== */
+        .settings-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .settings-section:last-child { border-bottom: none; margin-bottom: 0; }
+        .settings-section h4 { font-size: 1rem; color: var(--gray-900); margin-bottom: 1rem; }
+        .settings-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        .settings-input:focus { outline: none; border-color: var(--primary); }
+        .settings-msg {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            display: none;
+        }
+        .settings-msg.success { background: rgba(16,185,129,0.1); color: var(--success); display: block; }
+        .settings-msg.error   { background: rgba(69,105,173,0.1); color: var(--primary); display: block; }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .table-filters { flex-wrap: wrap; }
+            th:nth-child(5), td:nth-child(5),
+            th:nth-child(6), td:nth-child(6) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== Login Screen ===== -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <div class="logo">🎓</div>
+        <h2>VoiceHub Admin</h2>
+        <p>เข้าสู่ระบบเพื่อดูข้อเสนอแนะ</p>
+        <input type="email" id="adminEmail" placeholder="อีเมล" />
+        <input type="password" id="adminPassword" placeholder="รหัสผ่าน" />
+        <p class="login-error" id="loginError">อีเมลหรือรหัสผ่านไม่ถูกต้อง</p>
+        <button class="btn btn-primary" style="width:100%" onclick="handleLogin()">เข้าสู่ระบบ</button>
+    </div>
+</div>
+
+<!-- ===== Admin Screen ===== -->
+<div class="admin-screen" id="adminScreen">
+
+    <div class="topbar">
+        <div class="topbar-left">
+            🎓 VoiceHub Admin
+        </div>
+        <div class="topbar-right">
+            <button class="btn btn-outline" onclick="loadSubmissions()">🔄 รีเฟรช</button>
+            <button class="btn btn-outline" onclick="openSettings()">⚙️ ตั้งค่า</button>
+            <button class="btn btn-outline" onclick="handleLogout()">ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-label">ทั้งหมด</div>
+                <div class="stat-number" id="statTotal">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-label">รอดำเนินการ</div>
+                <div class="stat-number" id="statPending">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔄</div>
+                <div class="stat-label">กำลังดำเนินการ</div>
+                <div class="stat-number" id="statProgress">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">เสร็จสิ้นแล้ว</div>
+                <div class="stat-number" id="statDone">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">คะแนนเฉลี่ย</div>
+                <div class="stat-number" id="statRating">-</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <h2>รายการข้อเสนอแนะ</h2>
+                <div class="table-filters">
+                    <input type="text" id="searchInput" placeholder="🔍 ค้นหา..." oninput="filterTable()" />
+                    <select id="filterStatus" onchange="filterTable()">
+                        <option value="">ทุกสถานะ</option>
+                        <option value="pending">รอดำเนินการ</option>
+                        <option value="progress">กำลังดำเนินการ</option>
+                        <option value="done">เสร็จสิ้น</option>
+                    </select>
+                    <select id="filterCategory" onchange="filterTable()">
+                        <option value="">ทุกหมวด</option>
+                        <option value="academic">วิชาการ</option>
+                        <option value="facility">สิ่งอำนวยความสะดวก</option>
+                        <option value="welfare">สวัสดิการ</option>
+                        <option value="activity">กิจกรรม</option>
+                        <option value="problems">ปัญหา</option>
+                        <option value="clubhouse">สโมสร</option>
+                        <option value="other">อื่นๆ</option>
+                    </select>
+                    <select id="filterIntent" onchange="filterTable()">
+                        <option value="">ทุกเจตนา</option>
+                        <option value="complaint">ร้องเรียน</option>
+                        <option value="demand">เรียกร้อง</option>
+                        <option value="request">คำขอ</option>
+                    </select>
+                    <select id="filterUrgency" onchange="filterTable()">
+                        <option value="">ทุกระดับ</option>
+                        <option value="high">🔴 มาก</option>
+                        <option value="medium">🟡 กลาง</option>
+                        <option value="low">🟢 น้อย</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="tableContainer">
+                <div class="loading">⏳ กำลังโหลด...</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== Detail Modal ===== -->
+<div class="modal" id="detailModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="modalTitle">รายละเอียด</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="detail-row">
+                <div class="detail-item">
+                    <label>รหัสนิสิต</label>
+                    <p id="modalStudentId">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>สาขาวิชา</label>
+                    <p id="modalFaculty">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>หมวดหมู่</label>
+                    <p id="modalCategory">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>เจตนา</label>
+                    <p id="modalIntent">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>ระดับความรีบเร่ง</label>
+                    <p id="modalUrgency">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>อีเมล</label>
+                    <p id="modalEmail">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>วันที่ส่ง</label>
+                    <p id="modalDate">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>ไม่ระบุตัวตน</label>
+                    <p id="modalAnonymous">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>รหัสติดตาม</label>
+                    <p id="modalTrackingCode" style="font-family:monospace; font-weight:700; color:var(--primary)">-</p>
+                </div>
+                <div class="detail-item">
+                    <label>คะแนนความพึงพอใจ</label>
+                    <p id="modalRating">-</p>
+                </div>
+            </div>
+            <div class="detail-message" id="modalDescription"></div>
+
+            <label style="font-weight:600; display:block; margin-bottom:0.5rem;">อัปเดตสถานะ</label>
+            <select class="status-select" id="modalStatus">
+                <option value="pending">⏳ รอดำเนินการ</option>
+                <option value="progress">🔄 กำลังดำเนินการ</option>
+                <option value="done">✅ เสร็จสิ้น</option>
+            </select>
+            <button class="btn btn-primary" style="width:100%" onclick="updateStatus()">บันทึกสถานะ</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Settings Modal ===== -->
+<div class="modal" id="settingsModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3>⚙️ ตั้งค่าแอดมิน</h3>
+            <button class="modal-close" onclick="closeSettings()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-section">
+                <h4>📧 เปลี่ยนอีเมล</h4>
+                <p id="currentEmail" style="color:var(--gray-500);font-size:0.9rem;margin-bottom:0.75rem;"></p>
+                <input class="settings-input" type="email" id="newEmail" placeholder="อีเมลใหม่" />
+                <p class="settings-msg" id="emailMsg"></p>
+                <button class="btn btn-primary" style="width:100%" onclick="changeEmail()">บันทึกอีเมลใหม่</button>
+            </div>
+            <div class="settings-section">
+                <h4>🔑 เปลี่ยนรหัสผ่าน</h4>
+                <input class="settings-input" type="password" id="newPassword" placeholder="รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)" />
+                <input class="settings-input" type="password" id="confirmPassword" placeholder="ยืนยันรหัสผ่านใหม่" />
+                <p class="settings-msg" id="passwordMsg"></p>
+                <button class="btn btn-primary" style="width:100%" onclick="changePassword()">บันทึกรหัสผ่านใหม่</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+        'https://jcomkijbdmeyffekfarg.supabase.co',       // 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impjb21raWpiZG1leWZmZWtmYXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2MTM2OTMsImV4cCI6MjA5MzE4OTY5M30.Rmy2E3a36qFZKsqKEMlrIK9uKPdx8dmnN0m7IJ1tquU'   // 
+)
+    
+
+    let allData = []
+    let currentId = null
+    let sortCol = 'created_at'
+    let sortDir = 'desc'
+
+    const intentMap = { complaint: '📢 ร้องเรียน', demand: '✊ เรียกร้อง', request: '🙏 คำขอ' }
+    const urgencyMap = {
+        high:   '<span class="urgency-high">🔴 มาก</span>',
+        medium: '<span class="urgency-medium">🟡 กลาง</span>',
+        low:    '<span class="urgency-low">🟢 น้อย</span>'
+    }
+
+    // ===== Login =====
+    window.handleLogin = async () => {
+        const email = document.getElementById('adminEmail').value
+        const password = document.getElementById('adminPassword').value
+        const errEl = document.getElementById('loginError')
+
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+        if (error) {
+            errEl.style.display = 'block'
+        } else {
+            errEl.style.display = 'none'
+            showAdmin()
+        }
+    }
+
+    window.handleLogout = async () => {
+        await supabase.auth.signOut()
+        document.getElementById('loginScreen').style.display = 'flex'
+        document.getElementById('adminScreen').style.display = 'none'
+    }
+
+    async function showAdmin() {
+        document.getElementById('loginScreen').style.display = 'none'
+        document.getElementById('adminScreen').style.display = 'block'
+        await loadSubmissions()
+    }
+
+    // เช็ค session เดิม
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) showAdmin()
+
+    // ===== Load Data =====
+    window.loadSubmissions = async () => {
+        document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ กำลังโหลด...</div>'
+
+        const { data, error } = await supabase
+            .from('submissions')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        if (error) {
+            document.getElementById('tableContainer').innerHTML = '<div class="loading">❌ โหลดข้อมูลไม่ได้</div>'
+            return
+        }
+
+        allData = data
+        updateStats(data)
+        renderTable(data)
+    }
+
+    function updateStats(data) {
+        document.getElementById('statTotal').textContent = data.length
+        document.getElementById('statPending').textContent = data.filter(d => d.status === 'pending').length
+        document.getElementById('statProgress').textContent = data.filter(d => d.status === 'progress').length
+        document.getElementById('statDone').textContent = data.filter(d => d.status === 'done').length
+        const rated = data.filter(d => d.rating)
+        const avg = rated.length ? (rated.reduce((sum, d) => sum + d.rating, 0) / rated.length).toFixed(1) : '-'
+        document.getElementById('statRating').textContent = avg === '-' ? '-' : `${avg} ⭐`
+    }
+
+    function renderTable(data) {
+        if (data.length === 0) {
+            document.getElementById('tableContainer').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>ยังไม่มีข้อเสนอแนะ</p>
+                </div>`
+            return
+        }
+
+        const sorted = [...data].sort((a, b) => {
+            let va = a[sortCol] || '', vb = b[sortCol] || ''
+            if (sortCol === 'created_at') { va = new Date(va); vb = new Date(vb) }
+            return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1)
+        })
+
+        const statusMap = {
+            pending:  '<span class="badge badge-pending">⏳ รอดำเนินการ</span>',
+            progress: '<span class="badge badge-progress">🔄 กำลังดำเนินการ</span>',
+            done:     '<span class="badge badge-done">✅ เสร็จสิ้น</span>'
+        }
+
+        const rows = sorted.map(item => {
+            const date = new Date(item.created_at).toLocaleDateString('th-TH', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            })
+            return `
+                <tr>
+                    <td>${date}</td>
+                    <td><code style="font-size:0.8rem;background:var(--gray-100);padding:0.2rem 0.5rem;border-radius:4px;">${item.tracking_code || '-'}</code></td>
+                    <td><strong>${item.title || '-'}</strong></td>
+                    <td><span class="category-badge">${item.category || '-'}</span></td>
+                    <td><span class="intent-badge">${intentMap[item.intent] || item.intent || '-'}</span></td>
+                    <td>${urgencyMap[item.urgency] || item.urgency || '-'}</td>
+                    <td>${item.faculty || '-'}</td>
+                    <td>${item.anonymous ? '🔒 ไม่ระบุ' : (item.student_id || '-')}</td>
+                    <td>${statusMap[item.status] || item.status}</td>
+                    <td><button class="action-btn action-view" onclick="openDetail('${item.id}')">ดูรายละเอียด</button></td>
+                </tr>`
+        }).join('')
+
+        const mkTh = (col, label) => {
+            const cls = sortCol === col ? (sortDir === 'asc' ? 'sort-asc' : 'sort-desc') : ''
+            return `<th class="${cls}" onclick="sortBy('${col}')">${label}</th>`
+        }
+
+        document.getElementById('tableContainer').innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        ${mkTh('created_at','วันที่')}
+                        ${mkTh('tracking_code','รหัสติดตาม')}
+                        ${mkTh('title','หัวข้อ')}
+                        ${mkTh('category','หมวด')}
+                        ${mkTh('intent','เจตนา')}
+                        ${mkTh('urgency','ความรีบเร่ง')}
+                        ${mkTh('faculty','สาขา')}
+                        ${mkTh('student_id','รหัสนิสิต')}
+                        ${mkTh('status','สถานะ')}
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`
+    }
+
+    window.sortBy = (col) => {
+        if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc'
+        else { sortCol = col; sortDir = 'asc' }
+        filterTable()
+    }
+
+    // ===== Filter =====
+    window.filterTable = () => {
+        const search   = document.getElementById('searchInput').value.toLowerCase()
+        const status   = document.getElementById('filterStatus').value
+        const category = document.getElementById('filterCategory').value
+        const intent   = document.getElementById('filterIntent').value
+        const urgency  = document.getElementById('filterUrgency').value
+
+        const filtered = allData.filter(item => {
+            const matchSearch   = !search   || (item.title||'').toLowerCase().includes(search) || (item.description||'').toLowerCase().includes(search) || (item.student_id||'').toLowerCase().includes(search) || (item.tracking_code||'').toLowerCase().includes(search)
+            const matchStatus   = !status   || item.status   === status
+            const matchCategory = !category || item.category === category
+            const matchIntent   = !intent   || item.intent   === intent
+            const matchUrgency  = !urgency  || item.urgency  === urgency
+            return matchSearch && matchStatus && matchCategory && matchIntent && matchUrgency
+        })
+
+        renderTable(filtered)
+    }
+
+    // ===== Detail Modal =====
+    window.openDetail = (id) => {
+        const item = allData.find(d => d.id === id)
+        if (!item) return
+        currentId = id
+
+        document.getElementById('modalTitle').textContent       = item.title || 'ไม่มีหัวข้อ'
+        document.getElementById('modalStudentId').textContent   = item.anonymous ? '🔒 ไม่ระบุตัวตน' : (item.student_id || '-')
+        document.getElementById('modalFaculty').textContent     = item.faculty || '-'
+        document.getElementById('modalCategory').textContent    = item.category || '-'
+        document.getElementById('modalIntent').textContent      = intentMap[item.intent] || item.intent || '-'
+        document.getElementById('modalUrgency').innerHTML       = urgencyMap[item.urgency] || item.urgency || '-'
+        document.getElementById('modalEmail').textContent       = item.email || '-'
+        document.getElementById('modalAnonymous').textContent   = item.anonymous ? 'ใช่' : 'ไม่'
+        document.getElementById('modalTrackingCode').textContent= item.tracking_code || '-'
+        document.getElementById('modalRating').innerHTML = item.rating
+            ? `<span style="font-size:1.2rem;letter-spacing:2px;">${'⭐'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}</span> <span style="color:var(--gray-500);font-size:0.9rem;">(${item.rating}/5)</span>`
+            : '<span style="color:var(--gray-500)">ยังไม่มีคะแนน</span>'
+        document.getElementById('modalDescription').textContent = item.description || '-'
+        document.getElementById('modalDate').textContent        = new Date(item.created_at).toLocaleDateString('th-TH', {
+            day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        })
+        document.getElementById('modalStatus').value = item.status || 'pending'
+        document.getElementById('detailModal').classList.add('show')
+    }
+
+    window.closeModal = () => {
+        document.getElementById('detailModal').classList.remove('show')
+        currentId = null
+    }
+
+    // ===== Settings =====
+    window.openSettings = async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+            document.getElementById('currentEmail').textContent = `อีเมลปัจจุบัน: ${user.email}`
+        }
+        document.getElementById('newEmail').value = ''
+        document.getElementById('newPassword').value = ''
+        document.getElementById('confirmPassword').value = ''
+        document.getElementById('emailMsg').className = 'settings-msg'
+        document.getElementById('passwordMsg').className = 'settings-msg'
+        document.getElementById('settingsModal').classList.add('show')
+    }
+
+    window.closeSettings = () => {
+        document.getElementById('settingsModal').classList.remove('show')
+    }
+
+    window.changeEmail = async () => {
+        const newEmail = document.getElementById('newEmail').value.trim()
+        const msgEl = document.getElementById('emailMsg')
+        if (!newEmail) {
+            msgEl.textContent = 'กรุณากรอกอีเมลใหม่'
+            msgEl.className = 'settings-msg error'
+            return
+        }
+        const { error } = await supabase.auth.updateUser({ email: newEmail })
+        if (error) {
+            msgEl.textContent = 'เกิดข้อผิดพลาด: ' + error.message
+            msgEl.className = 'settings-msg error'
+        } else {
+            msgEl.textContent = '✅ ส่งลิงก์ยืนยันไปที่อีเมลใหม่แล้ว กรุณาตรวจสอบอีเมล'
+            msgEl.className = 'settings-msg success'
+            document.getElementById('newEmail').value = ''
+        }
+    }
+
+    window.changePassword = async () => {
+        const newPwd     = document.getElementById('newPassword').value
+        const confirmPwd = document.getElementById('confirmPassword').value
+        const msgEl      = document.getElementById('passwordMsg')
+        if (!newPwd || !confirmPwd) {
+            msgEl.textContent = 'กรุณากรอกรหัสผ่านให้ครบ'
+            msgEl.className = 'settings-msg error'
+            return
+        }
+        if (newPwd.length < 6) {
+            msgEl.textContent = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร'
+            msgEl.className = 'settings-msg error'
+            return
+        }
+        if (newPwd !== confirmPwd) {
+            msgEl.textContent = 'รหัสผ่านไม่ตรงกัน'
+            msgEl.className = 'settings-msg error'
+            return
+        }
+        const { error } = await supabase.auth.updateUser({ password: newPwd })
+        if (error) {
+            msgEl.textContent = 'เกิดข้อผิดพลาด: ' + error.message
+            msgEl.className = 'settings-msg error'
+        } else {
+            msgEl.textContent = '✅ เปลี่ยนรหัสผ่านเรียบร้อยแล้ว'
+            msgEl.className = 'settings-msg success'
+            document.getElementById('newPassword').value = ''
+            document.getElementById('confirmPassword').value = ''
+        }
+    }
+
+    document.getElementById('settingsModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('settingsModal')) closeSettings()
+    })
+
+    // ===== Update Status =====
+    window.updateStatus = async () => {
+        if (!currentId) return
+        const newStatus = document.getElementById('modalStatus').value
+
+        const { error } = await supabase
+            .from('submissions')
+            .update({ status: newStatus })
+            .eq('id', currentId)
+
+        if (error) {
+            alert('เกิดข้อผิดพลาด ลองใหม่อีกครั้ง')
+            console.error(error)
+            return
+        }
+
+        // อัปเดต local data
+        const idx = allData.findIndex(d => d.id === currentId)
+        if (idx !== -1) allData[idx].status = newStatus
+
+        updateStats(allData)
+        filterTable()
+        window.closeModal()
+        alert('✅ อัปเดตสถานะเรียบร้อย')
+    }
+
+    // ปิด modal เมื่อคลิกข้างนอก
+    document.getElementById('detailModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('detailModal')) closeModal()
+    })
+</script>
+
+</body>
+</html>
