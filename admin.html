@@ -639,6 +639,7 @@
     let sortDir = 'desc'
 
     const intentMap = { complaint: '📢 ร้องเรียน', demand: '✊ เรียกร้อง', request: '🙏 คำขอ' }
+    const categoryMap = { academic: '📚 วิชาการ / หลักสูตร', facility: '🏫 สิ่งอำนวยความสะดวก', welfare: '💙 สวัสดิการ', activity: '🎉 กิจกรรม', problems: '⚠️ ปัญหา', clubhouse: '🏠 สโมสร', other: '💬 อื่นๆ' }
     const urgencyMap = {
         high:   '<span class="urgency-high">🔴 มาก</span>',
         medium: '<span class="urgency-medium">🟡 กลาง</span>',
@@ -737,7 +738,7 @@
                     <td>${date}</td>
                     <td><code style="font-size:0.8rem;background:var(--gray-100);padding:0.2rem 0.5rem;border-radius:4px;">${item.tracking_code || '-'}</code></td>
                     <td><strong>${item.title || '-'}</strong></td>
-                    <td><span class="category-badge">${item.category || '-'}</span></td>
+                    <td><span class="category-badge">${categoryMap[item.category] || item.category || '-'}</span></td>
                     <td><span class="intent-badge">${intentMap[item.intent] || item.intent || '-'}</span></td>
                     <td>${urgencyMap[item.urgency] || item.urgency || '-'}</td>
                     <td>${item.year_level || '-'}</td>
@@ -800,14 +801,14 @@
 
     // ===== Detail Modal =====
     window.openDetail = (id) => {
-        const item = allData.find(d => d.id === id)
+        const item = allData.find(d => d.id == id)
         if (!item) return
         currentId = id
 
         document.getElementById('modalTitle').textContent       = item.title || 'ไม่มีหัวข้อ'
         document.getElementById('modalStudentId').textContent   = item.anonymous ? '🔒 ไม่ระบุตัวตน' : (item.student_id || '-')
         document.getElementById('modalFaculty').textContent     = item.year_level || '-'
-        document.getElementById('modalCategory').textContent    = item.category || '-'
+        document.getElementById('modalCategory').textContent    = categoryMap[item.category] || item.category || '-'
         document.getElementById('modalIntent').textContent      = intentMap[item.intent] || item.intent || '-'
         document.getElementById('modalUrgency').innerHTML       = urgencyMap[item.urgency] || item.urgency || '-'
         document.getElementById('modalEmail').textContent       = item.email || '-'
